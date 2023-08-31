@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Urbanist:wght@100;900&display=swap');
+
+:root {
+    --font-style: 'Urbanist', sans-serif;
+    --background-color: rgba(40, 40, 40, 1.0);
+    --font-color: #E3DAC9;
+}
+
+* {
+    font-family: var(--font-style, sans-serif);
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--font-color);
+}
+
+header {
+    font-weight: 900;
+    font-size: 5rem;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8rem;
+}
+
+.game-container {
+    display: flex;
+    width: 50vw;
+    height:  50vh;
+    justify-content: center;
+    align-items: center;
+    border: 5px var(--font-color) solid;
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    padding-top: 4rem;
+}
+
+.author ul {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 2rem;
+}
+
+.author img {
+    width: 2rem;
+}
