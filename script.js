@@ -1,32 +1,89 @@
-let turn = 1;
-let playerTurn = "X";
-
 const logicManager = (() => {
-    let checkGameOver = () => {
-        if(turn >= 9){
-            alert('game over');
+    let turn = 0;
+    let playerTurn = "X";
+
+    function checkWinner () {
+        const board = gameBoard.getBoard();
+        let counterX = 0;
+        let counterO = 0;
+
+        // store the indices of each correct combination as a 2d array
+		const winConditions = [
+			[0, 1, 2],
+			[3, 4, 5],
+			[6, 7, 8],
+			[0, 3, 6],
+			[1, 4, 7],
+			[2, 5, 8],
+			[0, 4, 8],
+			[2, 4, 6],
+		];
+
+        // a player cannot win before turn 5 so no need to run this part until then
+        if(turn >= 4){
+            for(let i = 0; i < winConditions.length; i++){
+                console.log('win condition row: ' + winConditions[i]);
+                for(let j = 0; j < winConditions[i].length; j++){
+                    if(board[winConditions[i][j]][0] === 'X'){
+                        counterX++;
+                    }
+                    if(board[winConditions[i][j]][0] === 'O'){
+                        counterO++;
+                    }
+                }
+                if(counterX === 3){
+                    player1.incrementScore();
+                    return 'playerX wins';
+                }
+                if(counterO === 3){
+                    player2.incrementScore();
+                    return 'playerO wins';
+                }
+                counterX = 0;
+                counterO = 0;
+            }
         }
     }
 
-    return { checkGameOver }
+    const getTurn = () => {
+        return turn;
+    }
+
+    const getPlayerTurn = () => {
+        return playerTurn;
+    }
+
+    const incrementTurn = () => {
+        turn++;
+    }
+
+    const swap = () => {
+        if(playerTurn === "X"){
+            playerTurn = "O";
+        }else{
+            playerTurn = "X";
+        }
+    }
+
+    return { checkWinner, getTurn, getPlayerTurn, swap, incrementTurn }
 })();
 
 const player = () => {
     let score = 0;
     let name = "";
-    getScore = () => {
+    const getScore = () => {
         return score;
     };
-    getName = () => {
+    const getName = () => {
         return name;
     };
-    incrementScore = () => {
+    const incrementScore = () => {
         score += 1;
     };
-    resetScore = () => {
+    const resetScore = () => {
         score = 0;
     }
-    setName = (newName) => {
+    const setName = (newName) => {
         name = newName;
     };
     return { getScore, getName, incrementScore, setName, resetScore };
@@ -39,7 +96,7 @@ const gameBoard = (() => {
         ["", false], ["", false], ["", false]
     ];
 
-    let init = () => {
+    const init = () => {
         const gameContainer = document.querySelector('.game-container');
         for(let i = 0; i < board.length; i++){
             const cell = document.createElement('div');
@@ -51,35 +108,53 @@ const gameBoard = (() => {
                 if(board[event.target.dataset.index][1]){
                     alert('already clicked');
                     return;
-                }else if(playerTurn === "X"){
-                    board[event.target.dataset.index][0] = "X";
+                }else if(logicManager.getPlayerTurn()){
+                    board[event.target.dataset.index][0] = logicManager.getPlayerTurn();
                     board[event.target.dataset.index][1] = true;
-                    playerTurn = "O";
-                    turn++;
-                    event.target.textContent = "X";
+                    event.target.textContent = logicManager.getPlayerTurn();
+                    logicManager.swap();
+                    logicManager.incrementTurn();
                 }else {
-                    board[event.target.dataset.index][0] = "O";
+                    board[event.target.dataset.index][0] = logicManager.getPlayerTurn();
                     board[event.target.dataset.index][1] = true;
-                    playerTurn = "X";
-                    turn++;
-                    event.target.textContent = "O";
+                    event.target.textContent = logicManager.getPlayerTurn();
+                    logicManager.swap();
+                    logicManager.incrementTurn();
+                }
+                if(logicManager.checkWinner() === 'playerX wins'){
+                    display.displayWinner(logicManager.checkWinner());
                 }
             });
-
             gameContainer.appendChild(cell);
         }
     };
 
-    return { init };
+    const getBoard = () => {
+        return board;
+    };
+
+    return { init, getBoard };
 })();
 
-gameBoard.init()
+const display = (() => {
+    const winnerDisplay = document.querySelector('.winner-display');
+    
+    const displayWinner = (winner = "unknown") => {
+        const display = document.createElement('div');
+        display.classList.add('winner');
+        display.textContent = winner;
+        winnerDisplay.appendChild(display);
+    }
+
+    return { displayWinner };
+})();
+
+gameBoard.init();
 
 const player1 = player();
 const player2 = player();
 
-player1.setName("joe");
-console.log(player1.getName());
+
 
 
 
